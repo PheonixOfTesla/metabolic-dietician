@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transform your metabolic health with personalized nutrition guidance from a registered dietitian.">
+    <title>Metabolic Dietician - Transform Your Health</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --primary: #b565d8;
+            --secondary: #8b5cf6;
+            --accent: #c084fc;
+            --bg-light: #faf5ff;
+            --bg-dark: #1a0329;
+            --text-dark: #2d1b69;
+            --text-light: #f3e8ff;
+            --gradient: linear-gradient(135deg, #b565d8 0%, #8b5cf6 100%);
+            
+            /* Responsive font sizes */
+            --fs-xs: clamp(0.75rem, 2vw, 0.875rem);
+            --fs-sm: clamp(0.875rem, 2.5vw, 1rem);
+            --fs-base: clamp(1rem, 3vw, 1.125rem);
+            --fs-lg: clamp(1.125rem, 3.5vw, 1.25rem);
+            --fs-xl: clamp(1.25rem, 4vw, 1.5rem);
+            --fs-2xl: clamp(1.5rem, 5vw, 2rem);
+            --fs-3xl: clamp(2rem, 6vw, 3rem);
+            --fs-4xl: clamp(2.5rem, 8vw, 3.5rem);
+            
+            /* Spacing */
+            --space-xs: clamp(0.5rem, 2vw, 1rem);
+            --space-sm: clamp(1rem, 3vw, 1.5rem);
+            --space-md: clamp(1.5rem, 4vw, 2rem);
+            --space-lg: clamp(2rem, 5vw, 3rem);
+            --space-xl: clamp(3rem, 6vw, 5rem);
+        }
+
+        /* Accessibility - High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary: #9333ea;
+                --secondary: #7c3aed;
+                --bg-light: #ffffff;
+                --text-dark: #000000;
+            }
+        }
+
+        /* Accessibility - Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            position: relative;
+            font-size: var(--fs-base);
+            line-height: 1.6;
+        }
+
+        /* Skip to main content - Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 0 0 4px 0;
+            z-index: 5000;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        *:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Better touch targets */
+        button, a, input, textarea, select {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background: 
+                radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, var(--secondary) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, var(--accent) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+
+        /* Logo Animation */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            position: relative;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .metabolic-logo {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .flower-petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .petal {
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            background: var(--gradient);
+            border-radius: 50% 0;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .petal:nth-child(1) { top: 10%; left: 30%; transform: rotate(0deg); }
+        .petal:nth-child(2) { top: 30%; right: 10%; transform: rotate(90deg); }
+        .petal:nth-child(3) { bottom: 10%; right: 30%; transform: rotate(180deg); }
+        .petal:nth-child(4) { bottom: 30%; left: 10%; transform: rotate(270deg); }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40%;
+            height: 40%;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(181, 101, 216, 0.5);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(250, 245, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-xs) var(--space-sm);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--fs-lg);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            min-height: 44px;
+            min-width: 44px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--text-dark);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+            padding: 0.5rem;
+        }
+
+        .nav-links a:hover, .nav-links a:focus {
+            color: var(--primary);
+        }
+
+        .book-now-btn {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(181, 101, 216, 0.3);
+            cursor: pointer;
+            border: none;
+            font-size: var(--fs-base);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+        .book-now-btn:hover, .book-now-btn:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(181, 101, 216, 0.4);
+        }
+
+        .book-now-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: clamp(8rem, 15vw, 10rem) var(--space-sm) var(--space-xl);
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: var(--fs-4xl);
+            margin-bottom: var(--space-sm);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease;
+            line-height: 1.2;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero p {
+            font-size: var(--fs-lg);
+            color: var(--text-dark);
+            margin-bottom: var(--space-md);
+            opacity: 0.8;
+            animation: fadeInUp 1s ease 0.2s backwards;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .promo-code {
+            display: inline-block;
+            background: rgba(181, 101, 216, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-bottom: var(--space-md);
+            font-weight: 600;
+            color: var(--primary);
+            animation: fadeInUp 1s ease 0.4s backwards;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .promo-code:hover, .promo-code:focus {
+            background: rgba(181, 101, 216, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Services Section */
+        .services {
+            padding: var(--space-xl) var(--space-sm);
+            background: white;
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services h2 {
+            text-align: center;
+            font-size: var(--fs-3xl);
+            margin-bottom: var(--space-lg);
+            color: var(--text-dark);
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .service-card {
+            background: var(--bg-light);
+            padding: var(--space-md);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .service-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .service-card:hover, .service-card:focus-within {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(181, 101, 216, 0.2);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-sm);
+            font-size: var(--fs-2xl);
+            color: white;
+        }
+
+        .service-card h3 {
+            font-size: var(--fs-xl);
+            margin-bottom: var(--space-xs);
+            color: var(--text-dark);
+        }
+
+        .service-card p {
+            line-height: 1.6;
+            color: var(--text-dark);
+            opacity: 0.8;
+            font-size: var(--fs-base);
+        }
+
+        .coming-soon {
+            display: inline-block;
+            background: rgba(181, 101, 216, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            color: var(--primary);
+            margin-top: 1rem;
+        }
+
+        /* Booking Section */
+        .booking-section {
+            padding: var(--space-xl) var(--space-sm);
+            background: var(--bg-light);
+            text-align: center;
+        }
+
+        .booking-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .booking-section h2 {
+            font-size: var(--fs-3xl);
+            margin-bottom: var(--space-md);
+            color: var(--text-dark);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .admin-panel.active {
+            right: 0;
+            display: block;
+        }
+
+        .admin-header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .admin-header h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .admin-content {
+            padding: var(--space-sm);
+        }
+
+        .admin-section {
+            margin-bottom: var(--space-md);
+            background: var(--bg-light);
+            padding: var(--space-sm);
+            border-radius: 10px;
+        }
+
+        .admin-section h3 {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: var(--fs-base);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(181, 101, 216, 0.1);
+        }
+
+        .save-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(181, 101, 216, 0.3);
+        }
+
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-box h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: var(--space-lg) var(--space-sm);
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Admin Toggle Button */
+        .admin-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(181, 101, 216, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1500;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(181, 101, 216, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            /* Navigation */
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-light);
+                flex-direction: column;
+                padding: var(--space-md);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+                transform: translateY(0);
+                opacity: 0;
+                pointer-events: none;
+            }
+            
+            .nav-links.active {
+                transform: translateY(-100%);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            .nav-links a {
+                width: 100%;
+                padding: var(--space-xs);
+                text-align: center;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+            }
+            
+            /* Hero adjustments */
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+            
+            /* Service grid */
+            .service-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+            
+            /* Admin panel */
+            .admin-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+            }
+            
+            /* Form adjustments */
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Footer */
+            .social-links {
+                gap: var(--space-sm);
+            }
+        }
+
+        /* Tablet styles */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-panel {
+                width: 450px;
+                right: -450px;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1440px) {
+            :root {
+                --fs-base: 1.125rem;
+                --fs-lg: 1.375rem;
+                --fs-xl: 1.75rem;
+                --fs-2xl: 2.25rem;
+                --fs-3xl: 3.5rem;
+                --fs-4xl: 4rem;
+            }
+            
+            .services-container,
+            .nav-container,
+            .hero,
+            .footer-content {
+                max-width: 1400px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav, .admin-toggle, .admin-panel, .login-modal {
+                display: none !important;
+            }
+            
+            .hero {
+                padding-top: 2rem;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(181, 101, 216, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 4000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Analytics Cards */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .analytics-card h4 {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-card p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--bg-light);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Client List */
+        .client-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .client-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .client-info p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .client-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .client-status.paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .client-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content for screen readers -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-container" style="width: 40px; height: 40px;">
+                    <div class="metabolic-logo" role="img" aria-label="Metabolic Dietician logo">
+                        <div class="flower-petals">
+                            <div class="petal"></div>
+                            <div class="petal"></div>
+                            <div class="petal"></div>
+                            <div class="petal"></div>
+                        </div>
+                        <div class="center-circle"></div>
+                    </div>
+                </div>
+                <span id="siteTitle">Metabolic Dietician</span>
+            </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <button class="book-now-btn" id="navBookBtn" onclick="openBooking()">Book Now</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main">
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="logo-container">
+            <div class="metabolic-logo" role="img" aria-label="Animated metabolic flower logo">
+                <div class="flower-petals">
+                    <div class="petal"></div>
+                    <div class="petal"></div>
+                    <div class="petal"></div>
+                    <div class="petal"></div>
+                </div>
+                <div class="center-circle"></div>
+            </div>
+        </div>
+        <h1 id="heroTitle">Transform Your Metabolic Health</h1>
+        <p id="heroSubtitle">Your journey to vibrant health begins with personalized nutrition guidance</p>
+        <div class="promo-code" id="promoCode" role="button" tabindex="0" aria-label="Click to use promo code">Use code: RDN_WITHBRIT for exclusive offers</div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="services-container">
+            <h2 id="servicesTitle">What I Offer</h2>
+            <div class="service-grid">
+                <div class="service-card">
+                    <div class="service-icon" id="service1Icon">👤</div>
+                    <h3 id="service1Title">1:1 Coaching</h3>
+                    <p id="service1Desc">Begin a personalized journey towards vibrant health with 1:1 coaching led by me - your metabolic bestie. Our journey together begins with a complimentary 15-minute discovery call, where we'll delve into your aspirations, assess compatibility, and outline a roadmap for success.</p>
+                    <button class="book-now-btn" id="service1Btn" style="margin-top: 1.5rem;" onclick="openBooking()">Book Discovery Call</button>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon" id="service2Icon">🤝</div>
+                    <h3 id="service2Title">Brand Partnerships</h3>
+                    <p id="service2Desc">Elevate your health, wellness, and nutrition brand to new heights by partnering with me, a dedicated registered dietitian specializing in metabolic health and integrative and functional medicine.</p>
+                    <span class="coming-soon" id="service2Status">Coming Soon</span>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon" id="service3Icon">📄</div>
+                    <h3 id="service3Title">Nutrition Handouts</h3>
+                    <p id="service3Desc">The significance of relying on accurate information cannot be overstated. With my free downloadable material, this hard to navigate landscape becomes more manageable.</p>
+                    <button class="book-now-btn" id="service3Btn" style="margin-top: 1.5rem;" onclick="downloadHandouts()">Download Free Resources</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="booking">
+        <div class="booking-container">
+            <h2 id="bookingTitle">Ready to Transform Your Health?</h2>
+            <p id="bookingDesc">Book your complimentary discovery call today and take the first step towards your healthiest self.</p>
+            <button class="book-now-btn" id="mainBookingBtn" style="margin-top: 2rem; font-size: 1.25rem; padding: 1rem 3rem;" onclick="openBooking()">Schedule Your Call</button>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" role="contentinfo">
+        <div class="footer-content">
+            <h3>Get in Touch</h3>
+            <p>Email: <a href="mailto:brittany.vankirk1030@gmail.com" id="footerEmail" style="color: var(--primary);">brittany.vankirk1030@gmail.com</a></p>
+            <div class="social-links">
+                <a href="#" id="instagramLink" title="Instagram">📷</a>
+                <a href="#" id="facebookLink" title="Facebook">📘</a>
+                <a href="#" id="linkedinLink" title="LinkedIn">💼</a>
+            </div>
+            <p style="margin-top: 2rem; opacity: 0.7;">© 2024 Metabolic Dietician. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Admin Toggle Button -->
+    <div class="admin-toggle" onclick="showLoginModal()" role="button" tabindex="0" aria-label="Open admin panel" title="Admin Panel">⚙️</div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" value="admin@metabolicdietician.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" value="demo123" required>
+                </div>
+                <button type="submit" class="save-btn">Login</button>
+                <button type="button" class="save-btn" style="margin-top: 1rem; background: #6b7280;" onclick="closeLoginModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+        <div class="admin-header">
+            <h2>Admin Panel</h2>
+            <p>Manage your website and track metrics</p>
+        </div>
+        
+        <div class="admin-content">
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('content')">Content</button>
+                <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content active">
+                <!-- Analytics Overview -->
+                <div class="admin-section">
+                    <h3>📊 Analytics Overview</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Total Bookings</h4>
+                            <p id="totalBookings">0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Revenue</h4>
+                            <p id="totalRevenue">$0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Active Clients</h4>
+                            <p id="activeClients">0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Conversion Rate</h4>
+                            <p id="conversionRate">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="admin-section">
+                    <h3>📅 Recent Bookings</h3>
+                    <div class="client-list" id="recentBookings">
+                        <p style="text-align: center; color: #6b7280;">No bookings yet</p>
+                    </div>
+                </div>
+
+                <!-- Traffic Stats -->
+                <div class="admin-section">
+                    <h3>📈 Traffic Statistics</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Page Views</h4>
+                            <p id="pageViews">0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Unique Visitors</h4>
+                            <p id="uniqueVisitors">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Tab -->
+            <div id="contentTab" class="tab-content">
+                <!-- Hero Content -->
+                <div class="admin-section">
+                    <h3>🏠 Hero Section</h3>
+                    <div class="form-group">
+                        <label>Hero Title</label>
+                        <input type="text" id="editHeroTitle" value="Transform Your Metabolic Health">
+                    </div>
+                    <div class="form-group">
+                        <label>Hero Subtitle</label>
+                        <input type="text" id="editHeroSubtitle" value="Your journey to vibrant health begins with personalized nutrition guidance">
+                    </div>
+                    <div class="form-group">
+                        <label>Promo Code Text</label>
+                        <input type="text" id="editPromoCode" value="Use code: RDN_WITHBRIT for exclusive offers">
+                    </div>
+                    <div class="form-group">
+                        <label>Promo Code URL</label>
+                        <input type="url" id="editPromoURL" value="https://www.badabeansnacks.com/?dt_id=1069950">
+                    </div>
+                    <button class="save-btn" onclick="saveHeroContent()">Save Hero Content</button>
+                </div>
+
+                <!-- Services Content -->
+                <div class="admin-section">
+                    <h3>💼 Services Section</h3>
+                    <div class="form-group">
+                        <label>Services Title</label>
+                        <input type="text" id="editServicesTitle" value="What I Offer">
+                    </div>
+                    
+                    <!-- Service 1 -->
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Service 1 - Coaching</h4>
+                    <div class="form-group">
+                        <label>Icon (Emoji)</label>
+                        <input type="text" id="editService1Icon" value="👤" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editService1Title" value="1:1 Coaching">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editService1Desc">Begin a personalized journey towards vibrant health with 1:1 coaching led by me - your metabolic bestie.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" id="editService1BtnText" value="Book Discovery Call">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Action (URL or 'booking')</label>
+                        <input type="text" id="editService1BtnAction" value="booking" placeholder="booking or https://...">
+                    </div>
+                    
+                    <!-- Service 2 -->
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Service 2 - Brand Partnerships</h4>
+                    <div class="form-group">
+                        <label>Icon (Emoji)</label>
+                        <input type="text" id="editService2Icon" value="🤝" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editService2Title" value="Brand Partnerships">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editService2Desc">Elevate your health, wellness, and nutrition brand to new heights by partnering with me.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Status Text (or leave empty for button)</label>
+                        <input type="text" id="editService2Status" value="Coming Soon" placeholder="e.g. Coming Soon">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text (if no status)</label>
+                        <input type="text" id="editService2BtnText" value="Learn More">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Action (URL)</label>
+                        <input type="text" id="editService2BtnAction" placeholder="https://...">
+                    </div>
+                    
+                    <!-- Service 3 -->
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Service 3 - Nutrition Handouts</h4>
+                    <div class="form-group">
+                        <label>Icon (Emoji)</label>
+                        <input type="text" id="editService3Icon" value="📄" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editService3Title" value="Nutrition Handouts">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editService3Desc">The significance of relying on accurate information cannot be overstated.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Button Text</label>
+                        <input type="text" id="editService3BtnText" value="Download Free Resources">
+                    </div>
+                    <div class="form-group">
+                        <label>Button Action (URL or file link)</label>
+                        <input type="text" id="editService3BtnAction" placeholder="https://drive.google.com/..." value="">
+                    </div>
+                    
+                    <button class="save-btn" onclick="saveServicesContent()">Save All Services</button>
+                </div>
+
+                <!-- Button Actions -->
+                <div class="admin-section">
+                    <h3>🔗 Button Actions</h3>
+                    <div class="form-group">
+                        <label>Main Booking Button Text</label>
+                        <input type="text" id="editBookingBtnText" value="Schedule Your Call">
+                    </div>
+                    <div class="form-group">
+                        <label>Booking Price ($)</label>
+                        <input type="number" id="editBookingPrice" value="150">
+                    </div>
+                    <div class="form-group">
+                        <label>After Booking Action</label>
+                        <select id="editBookingAction" onchange="updateBookingActionFields()">
+                            <option value="calendly">Calendly Redirect</option>
+                            <option value="custom">Custom URL</option>
+                            <option value="message">Show Message</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bookingActionField">
+                        <label>Calendly URL</label>
+                        <input type="text" id="editCalendlyUrl" value="calendly.com/metabolic-dietician">
+                    </div>
+                    <button class="save-btn" onclick="saveButtonActions()">Save Button Actions</button>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-content">
+                <!-- Account Settings -->
+                <div class="admin-section">
+                    <h3>👤 Account Settings</h3>
+                    <div class="form-group">
+                        <label>Admin Email</label>
+                        <input type="email" id="adminEmail" value="admin@metabolicdietician.com">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="adminPassword" placeholder="Leave blank to keep current">
+                    </div>
+                    <button class="save-btn" onclick="saveAccountSettings()">Save Account Settings</button>
+                </div>
+
+                <!-- Integrations -->
+                <div class="admin-section">
+                    <h3>🔧 Integrations</h3>
+                    <div class="form-group">
+                        <label>Stripe Secret Key</label>
+                        <input type="password" id="stripeKey" value="sk_test_51RtxFlPJ3JQRMx6ndHsiqqerhrRY0eGsQ3kFfTnC0IaHara44CzkCPBrrYCQOtQHzil2IdxFgIk1DkNXgRh2wi4e00xSL93Mw9">
+                    </div>
+                    <div class="form-group">
+                        <label>Zoom Meeting Link</label>
+                        <input type="text" id="zoomLink" placeholder="Your Zoom meeting link">
+                    </div>
+                    <button class="save-btn" onclick="saveIntegrations()">Save Integrations</button>
+                </div>
+
+                <!-- Contact & Social -->
+                <div class="admin-section">
+                    <h3>📱 Contact & Social</h3>
+                    <div class="form-group">
+                        <label>Contact Email</label>
+                        <input type="email" id="contactEmail" value="brittany.vankirk1030@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram URL</label>
+                        <input type="url" id="instagramUrl" placeholder="https://instagram.com/yourhandle">
+                    </div>
+                    <div class="form-group">
+                        <label>Facebook URL</label>
+                        <input type="url" id="facebookUrl" placeholder="https://facebook.com/yourpage">
+                    </div>
+                    <div class="form-group">
+                        <label>LinkedIn URL</label>
+                        <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                    <button class="save-btn" onclick="saveSocialLinks()">Save Contact & Social</button>
+                </div>
+
+                <!-- Export/Import -->
+                <div class="admin-section">
+                    <h3>💾 Data Management</h3>
+                    <button class="save-btn" onclick="exportData()">Export All Data</button>
+                    <button class="save-btn" style="margin-top: 1rem; background: #6b7280;" onclick="clearData()">Clear All Data</button>
+                </div>
+
+                <!-- Logout -->
+                <div class="admin-section">
+                    <button class="save-btn" style="background: #ef4444;" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const isOpen = navLinks.classList.contains('active');
+            
+            navLinks.classList.toggle('active');
+            toggle.classList.toggle('active');
+            toggle.setAttribute('aria-expanded', !isOpen);
+            
+            // Close menu when clicking outside
+            if (!isOpen) {
+                document.addEventListener('click', closeMobileMenuOutside);
+            } else {
+                document.removeEventListener('click', closeMobileMenuOutside);
+            }
+        }
+
+        function closeMobileMenuOutside(e) {
+            const navLinks = document.getElementById('navLinks');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (!navLinks.contains(e.target) && !toggle.contains(e.target)) {
+                navLinks.classList.remove('active');
+                toggle.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.removeEventListener('click', closeMobileMenuOutside);
+            }
+        }
+
+        // Initialize variables
+        let stripe = null;
+        let siteData = {
+            content: {
+                heroTitle: 'Transform Your Metabolic Health',
+                heroSubtitle: 'Your journey to vibrant health begins with personalized nutrition guidance',
+                promoCode: 'Use code: RDN_WITHBRIT for exclusive offers',
+                promoURL: 'https://www.badabeansnacks.com/?dt_id=1069950',
+                servicesTitle: 'What I Offer',
+                service1: {
+                    icon: '👤',
+                    title: '1:1 Coaching',
+                    description: 'Begin a personalized journey towards vibrant health with 1:1 coaching led by me - your metabolic bestie.',
+                    buttonText: 'Book Discovery Call',
+                    buttonAction: 'booking'
+                },
+                service2: {
+                    icon: '🤝',
+                    title: 'Brand Partnerships',
+                    description: 'Elevate your health, wellness, and nutrition brand to new heights by partnering with me.',
+                    statusText: 'Coming Soon',
+                    buttonText: 'Learn More',
+                    buttonAction: ''
+                },
+                service3: {
+                    icon: '📄',
+                    title: 'Nutrition Handouts',
+                    description: 'The significance of relying on accurate information cannot be overstated.',
+                    buttonText: 'Download Free Resources',
+                    buttonAction: ''
+                },
+                bookingBtnText: 'Schedule Your Call',
+                bookingPrice: 150,
+                bookingAction: 'calendly',
+                calendlyUrl: 'calendly.com/metabolic-dietician'
+            },
+            settings: {
+                email: 'admin@metabolicdietician.com',
+                password: 'demo123',
+                stripeKey: 'sk_test_51RtxFlPJ3JQRMx6ndHsiqqerhrRY0eGsQ3kFfTnC0IaHara44CzkCPBrrYCQOtQHzil2IdxFgIk1DkNXgRh2wi4e00xSL93Mw9',
+                zoomLink: '',
+                contactEmail: 'brittany.vankirk1030@gmail.com',
+                socialLinks: {
+                    instagram: '',
+                    facebook: '',
+                    linkedin: ''
+                }
+            },
+            analytics: {
+                bookings: 0,
+                revenue: 0,
+                clients: 0,
+                pageViews: 0,
+                uniqueVisitors: 0,
+                recentBookings: []
+            }
+        };
+
+        // Load data on startup
+        function loadData() {
+            const saved = localStorage.getItem('metabolicDieticianData');
+            if (saved) {
+                siteData = JSON.parse(saved);
+            }
+            updateFrontEnd();
+            updateAdminPanel();
+            
+            // Initialize Stripe
+            if (siteData.settings.stripeKey) {
+                stripe = Stripe(siteData.settings.stripeKey.replace('sk_test_', 'pk_test_'));
+            }
+            
+            // Track page view
+            trackPageView();
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('metabolicDieticianData', JSON.stringify(siteData));
+        }
+
+        // Update front-end with saved content
+        function updateFrontEnd() {
+            document.getElementById('heroTitle').textContent = siteData.content.heroTitle;
+            document.getElementById('heroSubtitle').textContent = siteData.content.heroSubtitle;
+            document.getElementById('promoCode').textContent = siteData.content.promoCode;
+            document.getElementById('servicesTitle').textContent = siteData.content.servicesTitle;
+            
+            // Service 1
+            document.getElementById('service1Icon').textContent = siteData.content.service1.icon;
+            document.getElementById('service1Title').textContent = siteData.content.service1.title;
+            document.getElementById('service1Desc').textContent = siteData.content.service1.description;
+            document.getElementById('service1Btn').textContent = siteData.content.service1.buttonText;
+            
+            // Service 2
+            document.getElementById('service2Icon').textContent = siteData.content.service2.icon;
+            document.getElementById('service2Title').textContent = siteData.content.service2.title;
+            document.getElementById('service2Desc').textContent = siteData.content.service2.description;
+            
+            // Show/hide service 2 button or status
+            if (siteData.content.service2.statusText) {
+                document.getElementById('service2Status').textContent = siteData.content.service2.statusText;
+                document.getElementById('service2Status').style.display = 'inline-block';
+                document.getElementById('service2Btn').style.display = 'none';
+            } else {
+                document.getElementById('service2Status').style.display = 'none';
+                document.getElementById('service2Btn').style.display = 'block';
+                document.getElementById('service2Btn').textContent = siteData.content.service2.buttonText;
+            }
+            
+            // Service 3
+            document.getElementById('service3Icon').textContent = siteData.content.service3.icon;
+            document.getElementById('service3Title').textContent = siteData.content.service3.title;
+            document.getElementById('service3Desc').textContent = siteData.content.service3.description;
+            document.getElementById('service3Btn').textContent = siteData.content.service3.buttonText;
+            
+            document.getElementById('mainBookingBtn').textContent = siteData.content.bookingBtnText;
+            document.getElementById('navBookBtn').textContent = 'Book Now';
+            
+            document.getElementById('footerEmail').href = `mailto:${siteData.settings.contactEmail}`;
+            document.getElementById('footerEmail').textContent = siteData.settings.contactEmail;
+            
+            // Update social links
+            if (siteData.settings.socialLinks.instagram) {
+                document.getElementById('instagramLink').href = siteData.settings.socialLinks.instagram;
+            }
+            if (siteData.settings.socialLinks.facebook) {
+                document.getElementById('facebookLink').href = siteData.settings.socialLinks.facebook;
+            }
+            if (siteData.settings.socialLinks.linkedin) {
+                document.getElementById('linkedinLink').href = siteData.settings.socialLinks.linkedin;
+            }
+        }
+
+        // Update admin panel with saved data
+        function updateAdminPanel() {
+            // Dashboard
+            document.getElementById('totalBookings').textContent = siteData.analytics.bookings;
+            document.getElementById('totalRevenue').textContent = `$${siteData.analytics.revenue}`;
+            document.getElementById('activeClients').textContent = siteData.analytics.clients;
+            document.getElementById('conversionRate').textContent = siteData.analytics.pageViews > 0 
+                ? `${Math.round((siteData.analytics.bookings / siteData.analytics.pageViews) * 100)}%` 
+                : '0%';
+            document.getElementById('pageViews').textContent = siteData.analytics.pageViews;
+            document.getElementById('uniqueVisitors').textContent = siteData.analytics.uniqueVisitors;
+            
+            // Update recent bookings
+            updateRecentBookings();
+            
+            // Content
+            document.getElementById('editHeroTitle').value = siteData.content.heroTitle;
+            document.getElementById('editHeroSubtitle').value = siteData.content.heroSubtitle;
+            document.getElementById('editPromoCode').value = siteData.content.promoCode;
+            document.getElementById('editPromoURL').value = siteData.content.promoURL;
+            document.getElementById('editServicesTitle').value = siteData.content.servicesTitle;
+            
+            // Service 1
+            document.getElementById('editService1Icon').value = siteData.content.service1.icon;
+            document.getElementById('editService1Title').value = siteData.content.service1.title;
+            document.getElementById('editService1Desc').value = siteData.content.service1.description;
+            document.getElementById('editService1BtnText').value = siteData.content.service1.buttonText;
+            document.getElementById('editService1BtnAction').value = siteData.content.service1.buttonAction;
+            
+            // Service 2
+            document.getElementById('editService2Icon').value = siteData.content.service2.icon;
+            document.getElementById('editService2Title').value = siteData.content.service2.title;
+            document.getElementById('editService2Desc').value = siteData.content.service2.description;
+            document.getElementById('editService2Status').value = siteData.content.service2.statusText || '';
+            document.getElementById('editService2BtnText').value = siteData.content.service2.buttonText;
+            document.getElementById('editService2BtnAction').value = siteData.content.service2.buttonAction || '';
+            
+            // Service 3
+            document.getElementById('editService3Icon').value = siteData.content.service3.icon;
+            document.getElementById('editService3Title').value = siteData.content.service3.title;
+            document.getElementById('editService3Desc').value = siteData.content.service3.description;
+            document.getElementById('editService3BtnText').value = siteData.content.service3.buttonText;
+            document.getElementById('editService3BtnAction').value = siteData.content.service3.buttonAction || '';
+            
+            document.getElementById('editBookingBtnText').value = siteData.content.bookingBtnText;
+            document.getElementById('editBookingPrice').value = siteData.content.bookingPrice;
+            document.getElementById('editBookingAction').value = siteData.content.bookingAction;
+            document.getElementById('editCalendlyUrl').value = siteData.content.calendlyUrl;
+            
+            // Settings
+            document.getElementById('adminEmail').value = siteData.settings.email;
+            document.getElementById('stripeKey').value = siteData.settings.stripeKey;
+            document.getElementById('zoomLink').value = siteData.settings.zoomLink;
+            document.getElementById('contactEmail').value = siteData.settings.contactEmail;
+            document.getElementById('instagramUrl').value = siteData.settings.socialLinks.instagram;
+            document.getElementById('facebookUrl').value = siteData.settings.socialLinks.facebook;
+            document.getElementById('linkedinUrl').value = siteData.settings.socialLinks.linkedin;
+        }
+
+        // Update recent bookings display
+        function updateRecentBookings() {
+            const container = document.getElementById('recentBookings');
+            if (siteData.analytics.recentBookings.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280;">No bookings yet</p>';
+            } else {
+                container.innerHTML = siteData.analytics.recentBookings.map(booking => `
+                    <div class="client-item">
+                        <div class="client-info">
+                            <h4>${booking.name}</h4>
+                            <p>${booking.date} - $${booking.amount}</p>
+                        </div>
+                        <div class="client-status ${booking.status}">${booking.status}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            // Update screen reader live region
+            const liveRegion = document.querySelector('[role="status"]');
+            if (liveRegion) {
+                liveRegion.textContent = message;
+            }
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                if (liveRegion) {
+                    liveRegion.textContent = '';
+                }
+            }, 3000);
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tab}Tab`).classList.add('active');
+        }
+
+        // Login functions
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email === siteData.settings.email && password === siteData.settings.password) {
+                closeLoginModal();
+                setTimeout(() => {
+                    openAdminPanel();
+                    showToast('Login successful!');
+                }, 300);
+            } else {
+                showToast('Invalid credentials!');
+            }
+        }
+
+        // Admin panel functions
+        function openAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = 'block';
+            setTimeout(() => {
+                panel.classList.add('active');
+            }, 10);
+            updateAdminPanel();
+        }
+
+        function closeAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.remove('active');
+            setTimeout(() => {
+                panel.style.display = 'none';
+            }, 300);
+        }
+
+        // Save functions
+        function saveHeroContent() {
+            siteData.content.heroTitle = document.getElementById('editHeroTitle').value;
+            siteData.content.heroSubtitle = document.getElementById('editHeroSubtitle').value;
+            siteData.content.promoCode = document.getElementById('editPromoCode').value;
+            siteData.content.promoURL = document.getElementById('editPromoURL').value;
+            
+            saveData();
+            updateFrontEnd();
+            showToast('Hero content saved!');
+        }
+
+        function saveServicesContent() {
+            siteData.content.servicesTitle = document.getElementById('editServicesTitle').value;
+            
+            // Service 1
+            siteData.content.service1.icon = document.getElementById('editService1Icon').value;
+            siteData.content.service1.title = document.getElementById('editService1Title').value;
+            siteData.content.service1.description = document.getElementById('editService1Desc').value;
+            siteData.content.service1.buttonText = document.getElementById('editService1BtnText').value;
+            siteData.content.service1.buttonAction = document.getElementById('editService1BtnAction').value;
+            
+            // Service 2
+            siteData.content.service2.icon = document.getElementById('editService2Icon').value;
+            siteData.content.service2.title = document.getElementById('editService2Title').value;
+            siteData.content.service2.description = document.getElementById('editService2Desc').value;
+            siteData.content.service2.statusText = document.getElementById('editService2Status').value;
+            siteData.content.service2.buttonText = document.getElementById('editService2BtnText').value;
+            siteData.content.service2.buttonAction = document.getElementById('editService2BtnAction').value;
+            
+            // Service 3
+            siteData.content.service3.icon = document.getElementById('editService3Icon').value;
+            siteData.content.service3.title = document.getElementById('editService3Title').value;
+            siteData.content.service3.description = document.getElementById('editService3Desc').value;
+            siteData.content.service3.buttonText = document.getElementById('editService3BtnText').value;
+            siteData.content.service3.buttonAction = document.getElementById('editService3BtnAction').value;
+            
+            saveData();
+            updateFrontEnd();
+            showToast('Services content saved!');
+        }
+
+        function saveButtonActions() {
+            siteData.content.bookingBtnText = document.getElementById('editBookingBtnText').value;
+            siteData.content.bookingPrice = parseInt(document.getElementById('editBookingPrice').value);
+            siteData.content.bookingAction = document.getElementById('editBookingAction').value;
+            siteData.content.calendlyUrl = document.getElementById('editCalendlyUrl').value;
+            
+            saveData();
+            updateFrontEnd();
+            showToast('Button actions saved!');
+        }
+
+        function saveAccountSettings() {
+            siteData.settings.email = document.getElementById('adminEmail').value;
+            const newPassword = document.getElementById('adminPassword').value;
+            if (newPassword) {
+                siteData.settings.password = newPassword;
+            }
+            
+            saveData();
+            showToast('Account settings saved!');
+        }
+
+        function saveIntegrations() {
+            siteData.settings.stripeKey = document.getElementById('stripeKey').value;
+            siteData.settings.zoomLink = document.getElementById('zoomLink').value;
+            
+            // Reinitialize Stripe
+            if (siteData.settings.stripeKey) {
+                stripe = Stripe(siteData.settings.stripeKey.replace('sk_test_', 'pk_test_'));
+            }
+            
+            saveData();
+            showToast('Integrations saved!');
+        }
+
+        function saveSocialLinks() {
+            siteData.settings.contactEmail = document.getElementById('contactEmail').value;
+            siteData.settings.socialLinks.instagram = document.getElementById('instagramUrl').value;
+            siteData.settings.socialLinks.facebook = document.getElementById('facebookUrl').value;
+            siteData.settings.socialLinks.linkedin = document.getElementById('linkedinUrl').value;
+            
+            saveData();
+            updateFrontEnd();
+            showToast('Contact & social links saved!');
+        }
+
+        function logout() {
+            closeAdminPanel();
+            showToast('Logged out successfully!');
+        }
+
+        // Booking function
+        async function openBooking() {
+            const price = siteData.content.bookingPrice;
+            const action = siteData.content.bookingAction;
+            
+            const confirmed = confirm(`Book a 15-minute discovery call for $${price}?`);
+            
+            if (confirmed) {
+                // Create booking record
+                const booking = {
+                    id: Date.now(),
+                    name: 'Client ' + (siteData.analytics.bookings + 1),
+                    date: new Date().toLocaleDateString(),
+                    amount: price,
+                    status: 'paid'
+                };
+                
+                // Update analytics
+                siteData.analytics.bookings++;
+                siteData.analytics.revenue += price;
+                siteData.analytics.clients++;
+                siteData.analytics.recentBookings.unshift(booking);
+                
+                // Keep only last 10 bookings
+                if (siteData.analytics.recentBookings.length > 10) {
+                    siteData.analytics.recentBookings = siteData.analytics.recentBookings.slice(0, 10);
+                }
+                
+                saveData();
+                
+                // Handle booking action
+                if (action === 'calendly') {
+                    window.open(`https://${siteData.content.calendlyUrl}`, '_blank');
+                    showToast('Booking confirmed! Redirecting to schedule...');
+                } else if (action === 'custom' && siteData.settings.zoomLink) {
+                    window.open(siteData.settings.zoomLink, '_blank');
+                    showToast('Booking confirmed! Redirecting to Zoom...');
+                } else {
+                    showToast('Booking confirmed! We\'ll contact you soon.');
+                }
+            }
+        }
+
+        // Service button handler
+        function handleServiceButton(action) {
+            if (action === 'booking') {
+                openBooking();
+            } else if (action && action.startsWith('http')) {
+                window.open(action, '_blank');
+            } else if (action) {
+                showToast('Action completed!');
+            } else {
+                showToast('No action configured for this button');
+            }
+        }
+
+        // Update booking action fields
+        function updateBookingActionFields() {
+            const action = document.getElementById('editBookingAction').value;
+            const field = document.getElementById('bookingActionField');
+            
+            if (action === 'calendly') {
+                field.innerHTML = `
+                    <label>Calendly URL</label>
+                    <input type="text" id="editCalendlyUrl" value="${siteData.content.calendlyUrl}">
+                `;
+            } else if (action === 'custom') {
+                field.innerHTML = `
+                    <label>Custom URL</label>
+                    <input type="url" id="editCalendlyUrl" placeholder="https://example.com">
+                `;
+            } else {
+                field.innerHTML = `
+                    <label>Success Message</label>
+                    <input type="text" id="editCalendlyUrl" value="Booking confirmed! We'll contact you soon.">
+                `;
+            }
+        }
+
+        // Track page view
+        function trackPageView() {
+            siteData.analytics.pageViews++;
+            
+            // Simple unique visitor tracking
+            const visitorId = localStorage.getItem('visitorId');
+            if (!visitorId) {
+                localStorage.setItem('visitorId', Date.now().toString());
+                siteData.analytics.uniqueVisitors++;
+            }
+            
+            saveData();
+        }
+
+        // Export data
+        function exportData() {
+            const dataStr = JSON.stringify(siteData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'metabolic-dietician-data.json';
+            link.click();
+            showToast('Data exported successfully!');
+        }
+
+        // Clear data
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            loadData();
+            
+            // Add smooth scrolling and close mobile menu on link click
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Close mobile menu if open
+                        const navLinks = document.getElementById('navLinks');
+                        const toggle = document.querySelector('.mobile-menu-toggle');
+                        if (navLinks.classList.contains('active')) {
+                            navLinks.classList.remove('active');
+                            toggle.classList.remove('active');
+                            toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            });
+            
+            // Promo code click handler
+            const promoCode = document.getElementById('promoCode');
+            promoCode.addEventListener('click', () => {
+                window.open(siteData.content.promoURL, '_blank');
+            });
+            promoCode.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.open(siteData.content.promoURL, '_blank');
+                }
+            });
+            
+            // Update all service button onclick handlers
+            document.getElementById('service1Btn').onclick = () => {
+                handleServiceButton(siteData.content.service1.buttonAction);
+            };
+            
+            document.getElementById('service2Btn').onclick = () => {
+                handleServiceButton(siteData.content.service2.buttonAction);
+            };
+            
+            document.getElementById('service3Btn').onclick = () => {
+                handleServiceButton(siteData.content.service3.buttonAction);
+            };
+            
+            // Add keyboard navigation for admin toggle
+            document.querySelector('.admin-toggle').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showLoginModal();
+                }
+            });
+            
+            // Improve form accessibility
+            document.querySelectorAll('input, textarea').forEach(field => {
+                if (!field.id) return;
+                const label = field.previousElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.setAttribute('for', field.id);
+                }
+            });
+            
+            // Add live region for toast notifications
+            const liveRegion = document.createElement('div');
+            liveRegion.setAttribute('role', 'status');
+            liveRegion.setAttribute('aria-live', 'polite');
+            liveRegion.setAttribute('aria-atomic', 'true');
+            liveRegion.className = 'sr-only';
+            document.body.appendChild(liveRegion);
+        });
+
+        // Screen reader only class
+        const style = document.createElement('style');
+        style.textContent = `
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0,0,0,0);
+                white-space: nowrap;
+                border: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
